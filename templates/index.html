@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clicker Game</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Clicker Game</h1>
+    <button id="clicker-button">Click me!</button>
+    <p>Balance: <span id="balance">0</span></p>
+    <h2>Demo Trading</h2>
+    <div id="trading">
+        <p>Current BTC/USDT price: <span id="price">Loading...</span></p>
+        <input type="number" id="amount" placeholder="Amount">
+        <button id="trade-button">Trade</button>
+    </div>
+    <script>
+        $(document).ready(function() {
+            let userId = 1; // Replace with actual user ID from Telegram Bot
+
+            $('#clicker-button').click(function() {
+                $.post('/click', { telegram_id: userId }, function(data) {
+                    $('#balance').text(data.balance);
+                });
+            });
+
+            function fetchPrice() {
+                $.get('/btc-price', function(data) {
+                    $('#price').text(data.price);
+                });
+            }
+
+            $('#trade-button').click(function() {
+                let amount = $('#amount').val();
+                let price = $('#price').text();
+                $.post('/trade', { user_id: userId, amount: amount, price: price }, function(data) {
+                    alert(data.message);
+                });
+            });
+
+            setInterval(fetchPrice, 5000);
+            fetchPrice();
+        });
+    </script>
+</body>
+</html>
